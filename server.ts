@@ -3765,6 +3765,14 @@ app.get("/api/wishlist/deposits", (req, res) => {
 // VITE SETUP / STATIC DELIVERY SYSTEM
 // ==========================================
 
+// 404 handler for unmatched API routes (must come before Vite middleware)
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api/")) {
+    return res.status(404).json({ error: "API endpoint not found" });
+  }
+  next();
+});
+
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     console.log("Starting backend dev server and injecting Vite client-side SPA bundle...");
@@ -3772,25 +3780,13 @@ async function startServer() {
       server: { middlewareMode: true },
       appType: "spa",
     });
-    // Use Vite middleware but skip API routes
-    app.use((req, res, next) => {
-      if (req.path.startsWith("/api/")) {
-        next();
-      } else {
-        vite.middlewares(req, res, next);
-      }
-    });
+    app.use(vite.middlewares);
   } else {
     // Serve production static build
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
-      // Only serve index.html for non-API routes
-      if (!req.path.startsWith("/api/")) {
-        res.sendFile(path.join(distPath, "index.html"));
-      } else {
-        res.status(404).json({ error: "API endpoint not found" });
-      }
+      res.sendFile(path.join(distPath, "index.html"));
     });
   }
 

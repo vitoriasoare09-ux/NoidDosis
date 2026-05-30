@@ -98,6 +98,28 @@
         "activity:register:🏠 Lar digital iniciado por FinalTest!:2026-05-30T23:31:27.585Z"
       ],
       "coins": 0
+    },
+    "couple_1780183993603_195": {
+      "id": "couple_1780183993603_195",
+      "invite_code": "VIDA39",
+      "connected": false,
+      "home_level": 1,
+      "total_points": 0,
+      "unlocked_achievements": [
+        "activity:register:🏠 Lar digital iniciado por APITest!:2026-05-30T23:33:13.603Z"
+      ],
+      "coins": 0
+    },
+    "couple_1780184381287_789": {
+      "id": "couple_1780184381287_789",
+      "invite_code": "PAR25",
+      "connected": false,
+      "home_level": 1,
+      "total_points": 0,
+      "unlocked_achievements": [
+        "activity:register:🏠 Lar digital iniciado por FixTest!:2026-05-30T23:39:41.287Z"
+      ],
+      "coins": 0
     }
   },
   "couplesUsers": {
@@ -232,6 +254,50 @@
         "points_weekly": 0,
         "coins": 0
       }
+    },
+    "couple_1780183993603_195": {
+      "Leandro": {
+        "id": "Leandro",
+        "name": "APITest",
+        "partner_nickname": "Meu Amor",
+        "color": "#3B82F6",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      },
+      "Kaisa": {
+        "id": "Kaisa",
+        "name": "Parceiro 2",
+        "partner_nickname": "Minha Vida",
+        "color": "#EC4899",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      }
+    },
+    "couple_1780184381287_789": {
+      "Leandro": {
+        "id": "Leandro",
+        "name": "FixTest",
+        "partner_nickname": "Meu Amor",
+        "color": "#3B82F6",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      },
+      "Kaisa": {
+        "id": "Kaisa",
+        "name": "Parceiro 2",
+        "partner_nickname": "Minha Vida",
+        "color": "#EC4899",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      }
     }
   },
   "accounts": [
@@ -276,6 +342,18 @@
       "passwordHash": "123",
       "userId": "Leandro",
       "coupleId": "couple_1780183887585_206"
+    },
+    {
+      "email": "api@test.com",
+      "passwordHash": "123",
+      "userId": "Leandro",
+      "coupleId": "couple_1780183993603_195"
+    },
+    {
+      "email": "fix@test.com",
+      "passwordHash": "123",
+      "userId": "Leandro",
+      "coupleId": "couple_1780184381287_789"
     }
   ],
   "tasks": [
