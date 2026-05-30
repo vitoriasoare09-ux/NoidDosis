@@ -54,6 +54,50 @@
         "activity:register:🏠 Lar digital iniciado por leandra!:2026-05-30T23:07:20.131Z"
       ],
       "coins": 0
+    },
+    "couple_1780183831950_771": {
+      "id": "couple_1780183831950_771",
+      "invite_code": "PAR58",
+      "connected": false,
+      "home_level": 1,
+      "total_points": 0,
+      "unlocked_achievements": [
+        "activity:register:🏠 Lar digital iniciado por Test!:2026-05-30T23:30:31.950Z"
+      ],
+      "coins": 0
+    },
+    "couple_1780183867681_185": {
+      "id": "couple_1780183867681_185",
+      "invite_code": "CASAL44",
+      "connected": false,
+      "home_level": 1,
+      "total_points": 0,
+      "unlocked_achievements": [
+        "activity:register:🏠 Lar digital iniciado por Test2!:2026-05-30T23:31:07.681Z"
+      ],
+      "coins": 0
+    },
+    "couple_1780183875106_856": {
+      "id": "couple_1780183875106_856",
+      "invite_code": "LOVE81",
+      "connected": false,
+      "home_level": 1,
+      "total_points": 0,
+      "unlocked_achievements": [
+        "activity:register:🏠 Lar digital iniciado por Test3!:2026-05-30T23:31:15.106Z"
+      ],
+      "coins": 0
+    },
+    "couple_1780183887585_206": {
+      "id": "couple_1780183887585_206",
+      "invite_code": "PAR17",
+      "connected": false,
+      "home_level": 1,
+      "total_points": 0,
+      "unlocked_achievements": [
+        "activity:register:🏠 Lar digital iniciado por FinalTest!:2026-05-30T23:31:27.585Z"
+      ],
+      "coins": 0
     }
   },
   "couplesUsers": {
@@ -100,6 +144,94 @@
         "points_weekly": 0,
         "coins": 0
       }
+    },
+    "couple_1780183831950_771": {
+      "Leandro": {
+        "id": "Leandro",
+        "name": "Test",
+        "partner_nickname": "Meu Amor",
+        "color": "#3B82F6",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      },
+      "Kaisa": {
+        "id": "Kaisa",
+        "name": "Parceiro 2",
+        "partner_nickname": "Minha Vida",
+        "color": "#EC4899",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      }
+    },
+    "couple_1780183867681_185": {
+      "Leandro": {
+        "id": "Leandro",
+        "name": "Test2",
+        "partner_nickname": "Meu Amor",
+        "color": "#3B82F6",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      },
+      "Kaisa": {
+        "id": "Kaisa",
+        "name": "Parceiro 2",
+        "partner_nickname": "Minha Vida",
+        "color": "#EC4899",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      }
+    },
+    "couple_1780183875106_856": {
+      "Leandro": {
+        "id": "Leandro",
+        "name": "Test3",
+        "partner_nickname": "Meu Amor",
+        "color": "#3B82F6",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      },
+      "Kaisa": {
+        "id": "Kaisa",
+        "name": "Parceiro 2",
+        "partner_nickname": "Minha Vida",
+        "color": "#EC4899",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      }
+    },
+    "couple_1780183887585_206": {
+      "Leandro": {
+        "id": "Leandro",
+        "name": "FinalTest",
+        "partner_nickname": "Meu Amor",
+        "color": "#3B82F6",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      },
+      "Kaisa": {
+        "id": "Kaisa",
+        "name": "Parceiro 2",
+        "partner_nickname": "Minha Vida",
+        "color": "#EC4899",
+        "timezone": "America/Sao_Paulo",
+        "avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
+        "points_weekly": 0,
+        "coins": 0
+      }
     }
   },
   "accounts": [
@@ -120,6 +252,30 @@
       "passwordHash": "369813",
       "userId": "Leandro",
       "coupleId": "couple_1780182440130_742"
+    },
+    {
+      "email": "test@test.com",
+      "passwordHash": "123",
+      "userId": "Leandro",
+      "coupleId": "couple_1780183831950_771"
+    },
+    {
+      "email": "test2@test.com",
+      "passwordHash": "123",
+      "userId": "Leandro",
+      "coupleId": "couple_1780183867681_185"
+    },
+    {
+      "email": "test3@test.com",
+      "passwordHash": "123",
+      "userId": "Leandro",
+      "coupleId": "couple_1780183875106_856"
+    },
+    {
+      "email": "final@test.com",
+      "passwordHash": "123",
+      "userId": "Leandro",
+      "coupleId": "couple_1780183887585_206"
     }
   ],
   "tasks": [

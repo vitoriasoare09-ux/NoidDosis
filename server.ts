@@ -3772,7 +3772,14 @@ async function startServer() {
       server: { middlewareMode: true },
       appType: "spa",
     });
-    app.use(vite.middlewares);
+    // Use Vite middleware but skip API routes
+    app.use((req, res, next) => {
+      if (req.path.startsWith("/api/")) {
+        next();
+      } else {
+        vite.middlewares(req, res, next);
+      }
+    });
   } else {
     // Serve production static build
     const distPath = path.join(process.cwd(), "dist");
