@@ -3765,14 +3765,6 @@ app.get("/api/wishlist/deposits", (req, res) => {
 // VITE SETUP / STATIC DELIVERY SYSTEM
 // ==========================================
 
-// 404 handler for unmatched API routes (must come before Vite middleware)
-app.use((req, res, next) => {
-  if (req.path.startsWith("/api/")) {
-    return res.status(404).json({ error: "API endpoint not found" });
-  }
-  next();
-});
-
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     console.log("Starting backend dev server and injecting Vite client-side SPA bundle...");
@@ -3795,4 +3787,4 @@ async function startServer() {
   });
 }
 
-startServer();
+db.waitReady().then(() => startServer()).catch(err => { console.error("Failed to connect to MongoDB:", err); process.exit(1); });
