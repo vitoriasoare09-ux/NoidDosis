@@ -27,7 +27,7 @@ import {
 } from "../src/types";;
 
 // DB Path
-const DB_FILE = path.join(process.cwd(), "nosdois_db.json");
+const DB_FILE = path.join(process.env.DATA_DIR || process.cwd(), "nosdois_db.json");
 
 interface DatabaseSchema {
   users: { [key: string]: User };
