@@ -3787,4 +3787,4 @@ async function startServer() {
   });
 }
 
-db.init().then(() => startServer()).catch(err => { console.error("Failed to connect to MongoDB:", err); process.exit(1); });
+startServer().catch(err => { console.error("Erro ao iniciar servidor:", err); process.exit(1); });
