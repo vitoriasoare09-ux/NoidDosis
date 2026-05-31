@@ -1,4 +1,5 @@
-import { MongoClient, Db, Collection } from "mongodb";
+import fs from "fs";
+import path from "path";
 import {
   User,
   Couple,
@@ -23,18 +24,64 @@ import {
   Quest,
   QuickNote,
   Pet
-} from "../src/types";
+} from "../src/types";;
 
-// ==========================================
-// DEFAULT SEED DATA (mantido igual ao original)
-// ==========================================
+// DB Path
+const DB_FILE = path.join(process.cwd(), "nosdois_db.json");
+
+interface DatabaseSchema {
+  users: { [key: string]: User };
+  couple: Couple;
+  couples?: { [key: string]: Couple };
+  couplesUsers?: { [key: string]: { [userId: string]: User } };
+  accounts?: { email: string; passwordHash: string; userId: string; coupleId: string }[];
+  tasks: Task[];
+  events: Event[];
+  shopping: ShoppingItem[];
+  expenses: Expense[];
+  memories: Memory[];
+  moods: MoodCheckIn[];
+  wishlist: WishlistItem[];
+  recipes: Recipe[];
+  mealPlan: MealPlan[];
+  inventory: InventoryItem[];
+  rewards: Reward[];
+  quests: Quest[];
+  quickNotes: QuickNote[];
+  pets?: Pet[];
+  houseDocuments?: any[];
+  houseMaintenances?: any[];
+  houseContacts?: any[];
+  fixedBills?: any[];
+  fixedFunctions?: any[];
+  quizzes?: any[];
+  spicyCheckins?: any[];
+  secretWishes?: any[];
+  // INTIMACY MODULE
+  spicyRewards?: any[]; // Mercado Negro
+  spicyQuests?: any[]; // Missões +18
+  spicyQuestCompletions?: any[];
+  loveDiceActions?: any[]; // Dados do Amor
+  loveDiceLocations?: any[];
+  loveDiceRolls?: any[];
+  secretFantasies?: any[]; // Cofre de Fantasias
+  userFantasySelections?: any[];
+  intimacyCheckins?: any[]; // Tracker de Intimidade
+  intimacyInsights?: any[];
+  // ENTERTAINMENT MODULE
+  dateOptions?: any[]; // Encontro Gacha
+  dateGachaRolls?: any[];
+  watchlistItems?: any[]; // Watchlist do Casal
+  watchHistory?: any[];
+  wishlistDeposits?: any[]; // Financial Integration
+}
 
 const DEFAULT_USERS: { [key: string]: User } = {
   Leandro: {
     id: "Leandro",
     name: "Leandro",
     partner_nickname: "Mozão",
-    color: "#3B82F6",
+    color: "#3B82F6", // Blue
     timezone: "America/Sao_Paulo",
     avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150",
     points_weekly: 40,
@@ -44,7 +91,7 @@ const DEFAULT_USERS: { [key: string]: User } = {
     id: "Kaisa",
     name: "Kaisa",
     partner_nickname: "Meu Amor",
-    color: "#EC4899",
+    color: "#EC4899", // Pink
     timezone: "America/Sao_Paulo",
     avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
     points_weekly: 55,
@@ -61,6 +108,7 @@ const DEFAULT_COUPLE: Couple = {
   unlocked_achievements: ["7-days-no-dishes", "first-trip-album"]
 };
 
+// Seed realistic tasks
 const DEFAULT_TASKS: Task[] = [
   {
     id: "task_1",
@@ -130,6 +178,7 @@ const DEFAULT_TASKS: Task[] = [
   }
 ];
 
+// Seed realistic events
 const DEFAULT_EVENTS: Event[] = [
   {
     id: "event_1",
@@ -173,6 +222,7 @@ const DEFAULT_EVENTS: Event[] = [
   }
 ];
 
+// Seed shopping items
 const DEFAULT_SHOPPING: ShoppingItem[] = [
   { id: "shop_1", name: "Tomate italiano", category: ShoppingCategory.HORTIFRUTI, quantity: 1, unit: "kg", price: 8.50, is_bought: false, added_by: "Kaisa" },
   { id: "shop_2", name: "Leite Integral Sem Lactose", category: ShoppingCategory.LATICINIOS, quantity: 4, unit: "caixas", price: 5.20, is_bought: false, added_by: "Leandro" },
@@ -181,6 +231,7 @@ const DEFAULT_SHOPPING: ShoppingItem[] = [
   { id: "shop_5", name: "Papel higiênico folha dupla", category: ShoppingCategory.HIGIENE, quantity: 1, unit: "pacote (12 un)", price: 18.90, is_bought: false, added_by: "Kaisa" }
 ];
 
+// Seed expenses
 const DEFAULT_EXPENSES: Expense[] = [
   { id: "exp_1", value: 350.00, currency: "R$", description: "Supermercado Semanal (Pão de Açúcar)", paid_by_id: "Leandro", split_type: "50/50", category: ExpenseCategory.ALIMENTACAO, date: new Date().toISOString().split("T")[0], is_recurring: false },
   { id: "exp_2", value: 1200.00, currency: "R$", description: "Aluguel & Condomínio", paid_by_id: "Kaisa", split_type: "50/50", category: ExpenseCategory.MORADIA, date: new Date(Date.now() - 4 * 24 * 3600000).toISOString().split("T")[0], is_recurring: true },
@@ -188,43 +239,93 @@ const DEFAULT_EXPENSES: Expense[] = [
   { id: "exp_4", value: 160.00, currency: "R$", description: "Cinema e Pipoca (Divertidamente)", paid_by_id: "Leandro", split_type: "paid_all", category: ExpenseCategory.LAZER, date: new Date(Date.now() - 5 * 24 * 3600000).toISOString().split("T")[0], is_recurring: false }
 ];
 
+// Seed album memories
 const DEFAULT_MEMORIES: Memory[] = [
-  { id: "mem_1", url: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=600", description: "Nossos sorrisos congelados na primeira que fomos à praia juntos!", date: `${new Date().getFullYear() - 1}-01-10`, location: "Ubatuba, SP", album_name: "Praia e Verão", created_at: new Date(Date.now() - 365 * 24 * 3600 * 1000).toISOString() },
-  { id: "mem_2", url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=600", description: "O dia que pegamos as chaves do nosso cantinho. Choro e emoção!", date: `${new Date().getFullYear()}-03-15`, location: "São Paulo, SP", album_name: "Nosso Apartamento", created_at: new Date(Date.now() - 60 * 24 * 3600 * 1000).toISOString() },
-  { id: "mem_3", url: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=600", description: "Luke dormindo com a língua pra fora, não aguentamos e tivemos que tirar foto.", date: new Date().toISOString().split("T")[0], location: "Em casa", album_name: "Adorável Luke", created_at: new Date().toISOString() }
+  {
+    id: "mem_1",
+    url: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=600",
+    description: "Nossos sorrisos congelados na primeira que fomos à praia juntos!",
+    date: `${new Date().getFullYear() - 1}-01-10`,
+    location: "Ubatuba, SP",
+    album_name: "Praia e Verão",
+    created_at: new Date(Date.now() - 365 * 24 * 3600 * 1000).toISOString()
+  },
+  {
+    id: "mem_2",
+    url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=600",
+    description: "O dia que pegamos as chaves do nosso cantinho. Choro e emoção!",
+    date: `${new Date().getFullYear()}-03-15`,
+    location: "São Paulo, SP",
+    album_name: "Nosso Apartamento",
+    created_at: new Date(Date.now() - 60 * 24 * 3600 * 1000).toISOString()
+  },
+  {
+    id: "mem_3",
+    url: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=600",
+    description: "Luke dormindo com a língua pra fora, não aguentamos e tivemos que tirar foto.",
+    date: new Date().toISOString().split("T")[0],
+    location: "Em casa",
+    album_name: "Adorável Luke",
+    created_at: new Date().toISOString()
+  }
 ];
 
+// Seed moods
 const DEFAULT_MOODS: MoodCheckIn[] = [
   { id: "mood_1", user_id: "Leandro", mood: MoodType.OTIMO, note: "Reunião de sprint deu super certo hoje!", share_note: true, date: new Date().toISOString().split("T")[0] },
   { id: "mood_2", user_id: "Kaisa", mood: MoodType.BEM, note: "Rotina corrida mas tudo sob controle", share_note: false, date: new Date().toISOString().split("T")[0] },
   { id: "mood_prev_1", user_id: "Leandro", mood: MoodType.BEM, date: new Date(Date.now() - 86400000).toISOString().split("T")[0], share_note: false },
-  { id: "mood_prev_2", user_id: "Kaisa", mood: MoodType.CANSADO, note: "Faculdade cansativa demais", date: new Date(Date.now() - 86400000).toISOString().split("T")[0], share_note: true }
+  { id: "mood_prev_2", user_id: "Kaisa", mood: MoodType.CANSADO, note: "Faculdade cansativa demais", date: new Date(Date.now() - 86400000).toISOString().split("T")[0], share_note: true },
+  { id: "mood_prev_3", user_id: "Leandro", mood: MoodType.ANSIOSO, date: new Date(Date.now() - 2 * 86400000).toISOString().split("T")[0], share_note: false },
+  { id: "mood_prev_4", user_id: "Kaisa", mood: MoodType.OTIMO, date: new Date(Date.now() - 2 * 86400000).toISOString().split("T")[0], share_note: false }
 ];
 
+// Seed wishlists
 const DEFAULT_WISHLIST: WishlistItem[] = [
   { id: "wish_1", name: "Smart TV 4K 55 Polegadas", priority: "Alta", category: WishlistCategory.LAR, link: "https://example.com/tv", estimated_price: 2500, added_by: "Kaisa", saving_goal: 2500, saving_saved: 1200 },
-  { id: "wish_2", name: "Anel de Prata Minimalista", priority: "Média", category: WishlistCategory.PESSOAL, link: "https://example.com/ring", estimated_price: 180, is_private_to_partner: true, added_by: "Leandro" },
+  { id: "wish_2", name: "Anel de Prata Minimalista", priority: "Média", category: WishlistCategory.PESSOAL, link: "https://example.com/ring", estimated_price: 180, is_private_to_partner: true, added_by: "Leandro" }, // Surprise to Kaisa
   { id: "wish_3", name: "Máquina de Café Espresso Exclusiva", priority: "Média", category: WishlistCategory.LAR, estimated_price: 950, added_by: "Leandro", saving_goal: 950, saving_saved: 300 },
-  { id: "wish_4", name: "Passagem de balão em Boituva", priority: "Alta", category: WishlistCategory.EXPERIENCIA, estimated_price: 800, added_by: "Ambos", saving_goal: 800, saving_saved: 800 }
+  { id: "wish_4", name: "Passagem de balão em Boituva", priority: "Alta", category: WishlistCategory.EXPERIENCIA, estimated_price: 800, added_by: "Ambos", saving_goal: 800, saving_saved: 800 } // fully funded!
 ];
 
+// Seed recipes
 const DEFAULT_RECIPES: Recipe[] = [
-  { id: "rec_1", title: "Macarrão Cremoso de Manjericão", ingredients: ["Macarrão Penne - 300g", "Molho de tomate - 1 lata", "Manjericão fresco - 1 punhado", "Creme de leite - 1 caixinha", "Alho amassado - 2 dentes", "Azeite de oliva"], instructions: "1. Cozinhe o penne em água salgada até ficar al dente.\n2. Refogue o alho no azeite, adicione o molho de tomate e manjericão, cozinhe por 5 min.\n3. Misture o creme de leite no molho em fogo baixo.\n4. Escorra a massa e envolva-a completamente no creme aromático. Sirva quente com queijo ralado.", duration: 20, portions: 2, couple_rating: "Favorita", tags: ["rápida", "econômica", "vegetariana"] },
-  { id: "rec_2", title: "Escondidinho de Carne Seca", ingredients: ["Mandioca cozida - 1kg", "Carne seca desfiada dessalgada - 500g", "Cebola picada - 1 un", "Manteiga - 2 colheres", "Leite integral - 1 xícara", "Queijo coalho ralado - 150g"], instructions: "1. Amasse a mandioca quente com manteiga e leite até virar um purê homogêneo.\n2. Refogue a carne seca com cebola até dourar.\n3. Num refratário, faça uma camada de carne, cubra com o purê de mandioca e polvilhe o queijo coalho.\n4. Leve ao forno para gratinar por 20 minutos a 200°C.", duration: 50, portions: 3, couple_rating: "Gostamos", tags: ["especial"] }
+  {
+    id: "rec_1",
+    title: "Macarrão Cremoso de Manjericão",
+    ingredients: ["Macarrão Penne - 300g", "Molho de tomate - 1 lata", "Manjericão fresco - 1 punhado", "Creme de leite - 1 caixinha", "Alho amassado - 2 dentes", "Azeite de oliva"],
+    instructions: "1. Cozinhe o penne em água salgada até ficar al dente.\n2. Refogue o alho no azeite, adicione o molho de tomate e manjericão, cozinhe por 5 min.\n3. Misture o creme de leite no molho em fogo baixo.\n4. Escorra a massa e envolva-a completamente no creme aromático. Sirva quente com queijo ralado.",
+    duration: 20,
+    portions: 2,
+    couple_rating: "Favorita",
+    tags: ["rápida", "econômica", "vegetariana"]
+  },
+  {
+    id: "rec_2",
+    title: "Escondidinho de Carne Seca",
+    ingredients: ["Mandioca cozida - 1kg", "Carne seca desfiada dessalgada - 500g", "Cebola picada - 1 un", "Manteiga - 2 colheres", "Leite integral - 1 xícara", "Queijo coalho ralado - 150g"],
+    instructions: "1. Amasse a mandioca quente com manteiga e leite até virar um purê homogêneo.\n2. Refogue a carne seca com cebola até dourar.\n3. Num refratário, faça uma camada de carne, cubra com o purê de mandioca e polvilhe o queijo coalho.\n4. Leve ao forno para gratinar por 20 minutos a 200°C.",
+    duration: 50,
+    portions: 3,
+    couple_rating: "Gostamos",
+    tags: ["especial"]
+  }
 ];
 
+// Seed meal plans
 const DEFAULT_MEAL_PLAN: MealPlan[] = [
   { id: "Segunda-Café", day: "Segunda", meal_type: "Café", custom_text: "Mamão, ovos mexidos e café puro" },
-  { id: "Segunda-Almoço", day: "Segunda", meal_type: "Almoço", recipe_id: "rec_1" },
+  { id: "Segunda-Almoço", day: "Segunda", meal_type: "Almoço", recipe_id: "rec_1" }, // penne
   { id: "Segunda-Jantar", day: "Segunda", meal_type: "Jantar", custom_text: "Sopa leve de legumes e torrada" },
-  { id: "Quarta-Jantar", day: "Quarta", meal_type: "Jantar", recipe_id: "rec_2" }
+  { id: "Quarta-Jantar", day: "Quarta", meal_type: "Jantar", recipe_id: "rec_2" }, // escondidinho
 ];
 
+// Seed inventory
 const DEFAULT_INVENTORY: InventoryItem[] = [
   { id: "inv_1", name: "Arroz agulhinha", quantity: 2, unit: "kg", min_quantity: 1 },
   { id: "inv_2", name: "Café Gourmet moído", quantity: 0.5, unit: "kg", min_quantity: 0.5 },
-  { id: "inv_3", name: "Açúcar demerara", quantity: 0.2, unit: "kg", min_quantity: 0.5 },
-  { id: "inv_4", name: "Sabonete líquido corpo", quantity: 1, unit: "unidade", min_quantity: 2 },
+  { id: "inv_3", name: "Açúcar demerara", quantity: 0.2, unit: "kg", min_quantity: 0.5 }, // low stock! Should auto sug
+  { id: "inv_4", name: "Sabonete líquido corpo", quantity: 1, unit: "unidade", min_quantity: 2 }, // low stock! Should auto sug
   { id: "inv_5", name: "Detergente de Maçã", quantity: 1, unit: "unidade", min_quantity: 1 }
 ];
 
@@ -288,9 +389,13 @@ const DEFAULT_HOUSE_CONTACTS = [
 ];
 
 const DEFAULT_FIXED_BILLS = [
-  { id: "h_bill_1", name: "Aluguel & Condomínio Lar", value: "2450.00", due_date: "2026-06-10", is_paid: false, coupleId: "couple_1" },
-  { id: "h_bill_2", name: "Internet Fibra Óptica", value: "119.90", due_date: "2026-06-15", is_paid: false, coupleId: "couple_1" }
+  { id: "h_bill_1", name: "Aluguel & Condomínio Lar", value: "2450.00", due_date: `2026-06-10`, is_paid: false, coupleId: "couple_1" },
+  { id: "h_bill_2", name: "Internet Fibra Óptica", value: "119.90", due_date: `2026-06-15`, is_paid: false, coupleId: "couple_1" }
 ];
+
+// ==========================================
+// INTIMACY MODULE DEFAULTS
+// ==========================================
 
 const DEFAULT_SPICY_REWARDS = [
   { id: "spicy_1", title: "Vale Striptease", description: "Uma performance exclusiva só para você.", cost: 200, emoji: "🌶️", is_repeatable: true, created_by: "system", coupleId: "couple_1", created_at: new Date().toISOString(), is_active: true },
@@ -331,6 +436,10 @@ const DEFAULT_SECRET_FANTASIES = [
   { id: "sf_6", title: "Piquenique no parque ao pôr do sol", category: "Romance", added_by: "system", is_custom: false, is_active: true }
 ];
 
+// ==========================================
+// ENTERTAINMENT MODULE DEFAULTS
+// ==========================================
+
 const DEFAULT_DATE_OPTIONS = [
   { id: "do_1", title: "Jantar romântico italiano", category: "restaurante", emoji: "🍝", created_by: "system", coupleId: "couple_1", is_active: true, times_chosen: 0 },
   { id: "do_2", title: "Sessão de cinema", category: "filme", emoji: "🎬", created_by: "system", coupleId: "couple_1", is_active: true, times_chosen: 0 },
@@ -345,233 +454,184 @@ const DEFAULT_WATCHLIST = [
   { id: "wl_2", title: "Stranger Things", type: "serie", genre: "Ficção Científica", platform: "Netflix", suggested_by: "Kaisa", coupleId: "couple_1", status: "assistindo", current_episode: 3, total_episodes: 8, whose_turn: "Leandro", added_at: new Date().toISOString(), poster_url: "https://images.unsplash.com/photo-1594909122845-11c5497e7b54?auto=format&fit=crop&q=80&w=150" }
 ];
 
-// ==========================================
-// MONGODB CONNECTION
-// ==========================================
-
-const MONGODB_URI = process.env.MONGODB_URI!;
-const DB_NAME = process.env.MONGODB_DB_NAME || "nosdois";
-
-if (!MONGODB_URI) {
-  throw new Error("❌ MONGODB_URI não está definida nas variáveis de ambiente!");
-}
-
-let client: MongoClient;
-let mongoDb: Db;
-
-async function getMongoDb(): Promise<Db> {
-  if (mongoDb) return mongoDb;
-  client = new MongoClient(MONGODB_URI);
-  await client.connect();
-  mongoDb = client.db(DB_NAME);
-  console.log(`✅ MongoDB conectado: ${DB_NAME}`);
-  return mongoDb;
-}
-
-// ==========================================
-// IN-MEMORY STORE (espelho do MongoDB em RAM)
-// O server.ts usa db.getStore() de forma síncrona,
-// então mantemos um cache em memória que é
-// sincronizado com o MongoDB de forma assíncrona.
-// ==========================================
-
-interface DatabaseSchema {
-  users: { [key: string]: User };
-  couple: Couple;
-  couples?: { [key: string]: Couple };
-  couplesUsers?: { [key: string]: { [userId: string]: User } };
-  accounts?: { email: string; passwordHash: string; userId: string; coupleId: string }[];
-  tasks: Task[];
-  events: Event[];
-  shopping: ShoppingItem[];
-  expenses: Expense[];
-  memories: Memory[];
-  moods: MoodCheckIn[];
-  wishlist: WishlistItem[];
-  recipes: Recipe[];
-  mealPlan: MealPlan[];
-  inventory: InventoryItem[];
-  rewards: Reward[];
-  quests: Quest[];
-  quickNotes: QuickNote[];
-  pets?: Pet[];
-  houseDocuments?: any[];
-  houseMaintenances?: any[];
-  houseContacts?: any[];
-  fixedBills?: any[];
-  fixedFunctions?: any[];
-  quizzes?: any[];
-  spicyCheckins?: any[];
-  secretWishes?: any[];
-  spicyRewards?: any[];
-  spicyQuests?: any[];
-  spicyQuestCompletions?: any[];
-  loveDiceActions?: any[];
-  loveDiceLocations?: any[];
-  loveDiceRolls?: any[];
-  secretFantasies?: any[];
-  userFantasySelections?: any[];
-  intimacyCheckins?: any[];
-  intimacyInsights?: any[];
-  dateOptions?: any[];
-  dateGachaRolls?: any[];
-  watchlistItems?: any[];
-  watchHistory?: any[];
-  wishlistDeposits?: any[];
-}
-
-function buildDefaultStore(): DatabaseSchema {
-  return {
-    users: { ...DEFAULT_USERS },
-    couple: { ...DEFAULT_COUPLE },
-    couples: { couple_1: { ...DEFAULT_COUPLE } },
-    couplesUsers: { couple_1: { ...DEFAULT_USERS } },
-    accounts: [
-      { email: "leandro@nosdois.com", passwordHash: "123456", userId: "Leandro", coupleId: "couple_1" },
-      { email: "kaisa@nosdois.com", passwordHash: "123456", userId: "Kaisa", coupleId: "couple_1" }
-    ],
-    tasks: [...DEFAULT_TASKS],
-    events: [...DEFAULT_EVENTS],
-    shopping: [...DEFAULT_SHOPPING],
-    expenses: [...DEFAULT_EXPENSES],
-    memories: [...DEFAULT_MEMORIES],
-    moods: [...DEFAULT_MOODS],
-    wishlist: [...DEFAULT_WISHLIST],
-    recipes: [...DEFAULT_RECIPES],
-    mealPlan: [...DEFAULT_MEAL_PLAN],
-    inventory: [...DEFAULT_INVENTORY],
-    rewards: [...DEFAULT_REWARDS],
-    quests: [...DEFAULT_QUESTS],
-    quickNotes: [],
-    pets: [...DEFAULT_PETS],
-    houseDocuments: [...DEFAULT_HOUSE_DOCUMENTS],
-    houseMaintenances: [...DEFAULT_HOUSE_MAINTENANCES],
-    houseContacts: [...DEFAULT_HOUSE_CONTACTS],
-    fixedBills: [...DEFAULT_FIXED_BILLS],
-    fixedFunctions: [],
-    quizzes: [],
-    spicyRewards: [...DEFAULT_SPICY_REWARDS],
-    spicyQuests: [...DEFAULT_SPICY_QUESTS],
-    spicyQuestCompletions: [],
-    loveDiceActions: [...DEFAULT_LOVE_DICE_ACTIONS],
-    loveDiceLocations: [...DEFAULT_LOVE_DICE_LOCATIONS],
-    loveDiceRolls: [],
-    secretFantasies: [...DEFAULT_SECRET_FANTASIES],
-    userFantasySelections: [],
-    intimacyCheckins: [],
-    intimacyInsights: [],
-    dateOptions: [...DEFAULT_DATE_OPTIONS],
-    dateGachaRolls: [],
-    watchlistItems: [...DEFAULT_WATCHLIST],
-    watchHistory: [],
-    wishlistDeposits: []
-  };
-}
-
-// ==========================================
-// DBStore — mesma interface pública de antes
-// ==========================================
-
 export class DBStore {
-  private data: DatabaseSchema = buildDefaultStore();
-  private initialized = false;
-  private saveDebounce: NodeJS.Timeout | null = null;
+  private data!: DatabaseSchema;
 
-  // Chamado uma vez no startup do servidor
-  public async init(): Promise<void> {
-    if (this.initialized) return;
-    const mdb = await getMongoDb();
-    const col = mdb.collection<{ _id: string } & DatabaseSchema>("store");
+  constructor() {
+    this.load();
+  }
 
-    const saved = await col.findOne({ _id: "main" });
-
-    if (saved) {
-      // Remove o campo _id do MongoDB antes de usar como store
-      const { _id, ...rest } = saved as any;
-      this.data = this.mergeWithDefaults(rest);
-      console.log("✅ Estado carregado do MongoDB");
+  private load() {
+    if (fs.existsSync(DB_FILE)) {
+      try {
+        const raw = fs.readFileSync(DB_FILE, "utf-8");
+        this.data = JSON.parse(raw);
+        
+        // Dynamic additions for backward compatibility
+        if (!this.data.rewards) {
+          this.data.rewards = [...DEFAULT_REWARDS];
+        }
+        if (!this.data.quests) {
+          this.data.quests = [...DEFAULT_QUESTS];
+        }
+        if (!this.data.quickNotes) {
+          this.data.quickNotes = [];
+        }
+        if (!this.data.couples) {
+          this.data.couples = {
+            "couple_1": { ...this.data.couple }
+          };
+        }
+        if (!this.data.accounts) {
+          this.data.accounts = [
+            { email: "leandro@nosdois.com", passwordHash: "123456", userId: "Leandro", coupleId: "couple_1" },
+            { email: "kaisa@nosdois.com", passwordHash: "123456", userId: "Kaisa", coupleId: "couple_1" }
+          ];
+        }
+        if (!this.data.couplesUsers) {
+          this.data.couplesUsers = {
+            "couple_1": { ...this.data.users }
+          };
+        }
+        if (!this.data.pets || this.data.pets.length === 0) {
+          this.data.pets = [...DEFAULT_PETS];
+        }
+        if (!this.data.houseDocuments || this.data.houseDocuments.length === 0) {
+          this.data.houseDocuments = [...DEFAULT_HOUSE_DOCUMENTS];
+        }
+        if (!this.data.houseMaintenances || this.data.houseMaintenances.length === 0) {
+          this.data.houseMaintenances = [...DEFAULT_HOUSE_MAINTENANCES];
+        }
+        if (!this.data.houseContacts || this.data.houseContacts.length === 0) {
+          this.data.houseContacts = [...DEFAULT_HOUSE_CONTACTS];
+        }
+        if (!this.data.fixedBills || this.data.fixedBills.length === 0) {
+          this.data.fixedBills = [...DEFAULT_FIXED_BILLS];
+        }
+        // Intimacy Module initialization
+        if (!this.data.spicyRewards || this.data.spicyRewards.length === 0) {
+          this.data.spicyRewards = [...DEFAULT_SPICY_REWARDS];
+        }
+        if (!this.data.spicyQuests || this.data.spicyQuests.length === 0) {
+          this.data.spicyQuests = [...DEFAULT_SPICY_QUESTS];
+        }
+        if (!this.data.spicyQuestCompletions) {
+          this.data.spicyQuestCompletions = [];
+        }
+        if (!this.data.loveDiceActions || this.data.loveDiceActions.length === 0) {
+          this.data.loveDiceActions = [...DEFAULT_LOVE_DICE_ACTIONS];
+        }
+        if (!this.data.loveDiceLocations || this.data.loveDiceLocations.length === 0) {
+          this.data.loveDiceLocations = [...DEFAULT_LOVE_DICE_LOCATIONS];
+        }
+        if (!this.data.loveDiceRolls) {
+          this.data.loveDiceRolls = [];
+        }
+        if (!this.data.secretFantasies || this.data.secretFantasies.length === 0) {
+          this.data.secretFantasies = [...DEFAULT_SECRET_FANTASIES];
+        }
+        if (!this.data.userFantasySelections) {
+          this.data.userFantasySelections = [];
+        }
+        if (!this.data.intimacyCheckins) {
+          this.data.intimacyCheckins = [];
+        }
+        if (!this.data.intimacyInsights) {
+          this.data.intimacyInsights = [];
+        }
+        // Entertainment Module initialization
+        if (!this.data.dateOptions || this.data.dateOptions.length === 0) {
+          this.data.dateOptions = [...DEFAULT_DATE_OPTIONS];
+        }
+        if (!this.data.dateGachaRolls) {
+          this.data.dateGachaRolls = [];
+        }
+        if (!this.data.watchlistItems || this.data.watchlistItems.length === 0) {
+          this.data.watchlistItems = [...DEFAULT_WATCHLIST];
+        }
+        if (!this.data.watchHistory) {
+          this.data.watchHistory = [];
+        }
+        if (!this.data.wishlistDeposits) {
+          this.data.wishlistDeposits = [];
+        }
+      } catch (err) {
+        console.error("Error reading database file, resetting to seeds", err);
+        this.resetToDefaults();
+      }
     } else {
-      // Primeira vez: grava os seeds no MongoDB
-      await col.insertOne({ _id: "main", ...this.data } as any);
-      console.log("✅ Seeds gravados no MongoDB (primeira inicialização)");
+      this.resetToDefaults();
     }
-
-    this.initialized = true;
   }
 
-  // Merge garante backward-compat quando novos campos são adicionados
-  private mergeWithDefaults(saved: Partial<DatabaseSchema>): DatabaseSchema {
-    const defaults = buildDefaultStore();
-    return {
-      ...defaults,
-      ...saved,
-      // Garante que arrays nunca fiquem undefined
-      tasks:                  saved.tasks                  ?? defaults.tasks,
-      events:                 saved.events                 ?? defaults.events,
-      shopping:               saved.shopping               ?? defaults.shopping,
-      expenses:               saved.expenses               ?? defaults.expenses,
-      memories:               saved.memories               ?? defaults.memories,
-      moods:                  saved.moods                  ?? defaults.moods,
-      wishlist:               saved.wishlist               ?? defaults.wishlist,
-      recipes:                saved.recipes                ?? defaults.recipes,
-      mealPlan:               saved.mealPlan               ?? defaults.mealPlan,
-      inventory:              saved.inventory              ?? defaults.inventory,
-      rewards:                saved.rewards?.length        ? saved.rewards    : defaults.rewards,
-      quests:                 saved.quests?.length         ? saved.quests     : defaults.quests,
-      quickNotes:             saved.quickNotes             ?? [],
-      pets:                   saved.pets?.length           ? saved.pets       : defaults.pets,
-      houseDocuments:         saved.houseDocuments?.length ? saved.houseDocuments  : defaults.houseDocuments,
-      houseMaintenances:      saved.houseMaintenances?.length ? saved.houseMaintenances : defaults.houseMaintenances,
-      houseContacts:          saved.houseContacts?.length  ? saved.houseContacts  : defaults.houseContacts,
-      fixedBills:             saved.fixedBills?.length     ? saved.fixedBills    : defaults.fixedBills,
-      spicyRewards:           saved.spicyRewards?.length   ? saved.spicyRewards  : defaults.spicyRewards,
-      spicyQuests:            saved.spicyQuests?.length    ? saved.spicyQuests   : defaults.spicyQuests,
-      spicyQuestCompletions:  saved.spicyQuestCompletions  ?? [],
-      loveDiceActions:        saved.loveDiceActions?.length ? saved.loveDiceActions  : defaults.loveDiceActions,
-      loveDiceLocations:      saved.loveDiceLocations?.length ? saved.loveDiceLocations : defaults.loveDiceLocations,
-      loveDiceRolls:          saved.loveDiceRolls          ?? [],
-      secretFantasies:        saved.secretFantasies?.length ? saved.secretFantasies : defaults.secretFantasies,
-      userFantasySelections:  saved.userFantasySelections  ?? [],
-      intimacyCheckins:       saved.intimacyCheckins       ?? [],
-      intimacyInsights:       saved.intimacyInsights       ?? [],
-      dateOptions:            saved.dateOptions?.length     ? saved.dateOptions   : defaults.dateOptions,
-      dateGachaRolls:         saved.dateGachaRolls         ?? [],
-      watchlistItems:         saved.watchlistItems?.length  ? saved.watchlistItems : defaults.watchlistItems,
-      watchHistory:           saved.watchHistory           ?? [],
-      wishlistDeposits:       saved.wishlistDeposits       ?? []
-    };
-  }
-
-  // Gravação assíncrona com debounce de 300ms para evitar writes excessivos
-  private async persistToMongo() {
+  private save() {
     try {
-      const mdb = await getMongoDb();
-      const col = mdb.collection("store");
-      await col.replaceOne({ _id: "main" }, { _id: "main", ...this.data } as any, { upsert: true });
+      fs.writeFileSync(DB_FILE, JSON.stringify(this.data, null, 2), "utf-8");
     } catch (err) {
-      console.error("❌ Erro ao salvar no MongoDB:", err);
+      console.error("Error writing database file", err);
     }
   }
 
-  // ==========================================
-  // Interface pública (idêntica à versão JSON)
-  // ==========================================
+  public resetToDefaults() {
+    this.data = {
+      users: { ...DEFAULT_USERS },
+      couple: { ...DEFAULT_COUPLE },
+      couples: {
+        "couple_1": { ...DEFAULT_COUPLE }
+      },
+      couplesUsers: {
+        "couple_1": { ...DEFAULT_USERS }
+      },
+      accounts: [
+        { email: "leandro@nosdois.com", passwordHash: "123456", userId: "Leandro", coupleId: "couple_1" },
+        { email: "kaisa@nosdois.com", passwordHash: "123456", userId: "Kaisa", coupleId: "couple_1" }
+      ],
+      tasks: [...DEFAULT_TASKS],
+      events: [...DEFAULT_EVENTS],
+      shopping: [...DEFAULT_SHOPPING],
+      expenses: [...DEFAULT_EXPENSES],
+      memories: [...DEFAULT_MEMORIES],
+      moods: [...DEFAULT_MOODS],
+      wishlist: [...DEFAULT_WISHLIST],
+      recipes: [...DEFAULT_RECIPES],
+      mealPlan: [...DEFAULT_MEAL_PLAN],
+      inventory: [...DEFAULT_INVENTORY],
+      rewards: [...DEFAULT_REWARDS],
+      quests: [...DEFAULT_QUESTS],
+      quickNotes: [],
+      pets: [...DEFAULT_PETS],
+      houseDocuments: [...DEFAULT_HOUSE_DOCUMENTS],
+      houseMaintenances: [...DEFAULT_HOUSE_MAINTENANCES],
+      houseContacts: [...DEFAULT_HOUSE_CONTACTS],
+      fixedBills: [...DEFAULT_FIXED_BILLS],
+      // Intimacy Module
+      spicyRewards: [...DEFAULT_SPICY_REWARDS],
+      spicyQuests: [...DEFAULT_SPICY_QUESTS],
+      spicyQuestCompletions: [],
+      loveDiceActions: [...DEFAULT_LOVE_DICE_ACTIONS],
+      loveDiceLocations: [...DEFAULT_LOVE_DICE_LOCATIONS],
+      loveDiceRolls: [],
+      secretFantasies: [...DEFAULT_SECRET_FANTASIES],
+      userFantasySelections: [],
+      intimacyCheckins: [],
+      intimacyInsights: [],
+      // Entertainment Module
+      dateOptions: [...DEFAULT_DATE_OPTIONS],
+      dateGachaRolls: [],
+      watchlistItems: [...DEFAULT_WATCHLIST],
+      watchHistory: [],
+      wishlistDeposits: []
+    };
+    this.save();
+  }
 
+  // General Access
   public getStore(): DatabaseSchema {
     return this.data;
   }
 
   public saveStore() {
-    // Debounce: agrupa saves rápidos em uma única escrita
-    if (this.saveDebounce) clearTimeout(this.saveDebounce);
-    this.saveDebounce = setTimeout(() => {
-      this.persistToMongo();
-    }, 300);
-  }
-
-  public async resetToDefaults() {
-    this.data = buildDefaultStore();
-    await this.persistToMongo();
+    this.save();
   }
 }
 
